@@ -101,14 +101,15 @@ export class Context {
 
         const pagePath = parsePagePath(path.resolve(this.cfg.root, dir), file);
         let opt: PageFileOption = { filePath: file, pagePath, root };
+        const page = this.files.get(file) || new PageFile(opt);
+        opt.definePageMeta = await page.getPageMeta().catch(() => undefined);
         for (const hook of this.cfg.hooks) {
           if (hook.parsePageOption) {
             opt = await Promise.resolve(hook.parsePageOption(opt));
           }
         }
 
-        const page = this.files.get(file) || new PageFile(opt);
-        files.set(file, page);
+        files.set(file, this.files.get(file) || new PageFile(opt));
       }
     }
 
@@ -122,14 +123,15 @@ export class Context {
 
       const pagePath = parsePagePath(this.cfg.src, file);
       let opt: PageFileOption = { filePath: file, pagePath };
+      const page = this.files.get(file) || new PageFile(opt);
+      opt.definePageMeta = await page.getPageMeta().catch(() => undefined);
       for (const hook of this.cfg.hooks) {
         if (hook.parsePageOption) {
           opt = await Promise.resolve(hook.parsePageOption(opt));
         }
       }
 
-      const page = this.files.get(file) || new PageFile(opt);
-      files.set(file, page);
+      files.set(file, this.files.get(file) || new PageFile(opt));
     }
 
     this.files = files;
@@ -146,6 +148,7 @@ export class Context {
           filePath: p.file,
           pagePath: p.path,
           root: p.root,
+          definePageMeta: await p.getPageMeta(platform).catch(() => undefined),
         });
       }
     }
@@ -176,6 +179,7 @@ export class Context {
           filePath: p.file,
           pagePath: p.path,
           root: p.root,
+          definePageMeta: await p.getPageMeta(platform).catch(() => undefined),
         });
       }
     }

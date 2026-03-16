@@ -73,6 +73,10 @@ export interface PageFileOption {
   pagePath: string;
   /** subPackages 中的 root，为空则非subPackage */
   root?: string;
+  /**
+   * definePage 解析后的元数据（按当前 platform 计算）
+   */
+  definePageMeta?: UserPageMeta;
 }
 
 export class PageFile {
@@ -288,7 +292,7 @@ export class PageFile {
     this.changed = false; // 已经更新过 page meta, 可以将 changed 标记置为 false
   }
 
-  private async getPageMeta(platform = currentPlatform(), forceRead = false): Promise<UserPageMeta | undefined> {
+  public async getPageMeta(platform = currentPlatform(), forceRead = false): Promise<UserPageMeta | undefined> {
 
     if (forceRead || !this.content) {
       await this.parse();
