@@ -124,4 +124,50 @@ describe('generate', async () => {
       }"
       `);
   });
+
+  it('transformPage hook', async () => {
+    const hookedCtx = new Context(resolveConfig({
+      root: path.resolve(__dirname, '../playground'),
+      pageDir: 'pages',
+      subPackageDirs: ['pages-sub'],
+      platform: ['h5'],
+      hooks: [
+        {
+          transformPage(platform, page, opt) {
+            return {
+              ...page,
+              style: {
+                ...page.style,
+                navigationBarBackgroundColor: opt.root ? '#111111' : '#222222',
+                navigationBarTextStyle: platform === 'h5' ? 'white' : 'black',
+              },
+            };
+          },
+        },
+      ],
+    }));
+
+    await hookedCtx.scanFiles();
+
+    const pagesJson = await hookedCtx.generatePagesJson('h5');
+    const mainPage = pagesJson.pages?.find(page => page.path === 'pages/index/index');
+    const subPage = pagesJson.subPackages
+      ?.find(subPackage => subPackage.root === 'pages-sub')
+      ?.pages
+      .find(page => page.path === 'index');
+
+    expect(mainPage).toMatchObject({
+      style: {
+        navigationBarBackgroundColor: '#222222',
+        navigationBarTextStyle: 'white',
+      },
+    });
+
+    expect(subPage).toMatchObject({
+      style: {
+        navigationBarBackgroundColor: '#111111',
+        navigationBarTextStyle: 'white',
+      },
+    });
+  });
 });

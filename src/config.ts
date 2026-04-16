@@ -1,3 +1,4 @@
+import type * as PagesJSON from '@uni-ku/pages-json/types';
 import type { PageFileOption } from './page-file';
 import type { MaybePromise } from './types';
 import type { UniPlatform } from './utils/uni-env';
@@ -19,6 +20,11 @@ export interface ConfigHook {
    * 过滤、修改 pages 的页面文件信息
    */
   filterPages?: (platform: UniPlatform, opts: PageFileOption[]) => MaybePromise<PageFileOption[]>;
+  /**
+   * 修改生成的页面配置
+   * 返回 null 可忽略该页面
+   */
+  transformPage?: (platform: UniPlatform, page: PagesJSON.Page, opt: PageFileOption) => MaybePromise<PagesJSON.Page | null>;
 }
 
 export interface UserConfig {

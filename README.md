@@ -117,6 +117,24 @@ export interface UserConfig {
    */
   indent?: string | number;
 }
+
+export interface ConfigHook {
+  /**
+   * 获取页面路径
+   */
+  parsePageOption?: (opt: PageFileOption) => MaybePromise<PageFileOption>;
+
+  /**
+   * 过滤、修改 pages 的页面文件信息
+   */
+  filterPages?: (platform: UniPlatform, opts: PageFileOption[]) => MaybePromise<PageFileOption[]>;
+
+  /**
+   * 修改生成的页面配置
+   * 返回 null 可忽略该页面
+   */
+  transformPage?: (platform: UniPlatform, page: Page, opt: PageFileOption) => MaybePromise<Page | null>;
+}
 ```
 
 ## 📄 动态配置文件

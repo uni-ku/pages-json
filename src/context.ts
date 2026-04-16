@@ -285,7 +285,8 @@ export class Context {
    */
   private async generatePages(platform = currentPlatform()): Promise<PagesJSON.Page[]> {
     const pageFiles = await this.getMainPageFiles(platform);
-    return Promise.all(pageFiles.map(async pf => pf.getPage(platform))).then(pages => pages.filter(p => !!p));
+    return Promise.all(pageFiles.map(async pf => this.transformPage(platform, pf, await pf.getPage(platform))))
+      .then(pages => pages.filter(p => !!p));
   }
 
   /**
@@ -301,7 +302,8 @@ export class Context {
       }
       subPackages[pf.root] = subPackages[pf.root] || { root: pf.root, pages: [] };
 
-      const page = await pf.getPage(platform);
+      const page = await this.transformPage(platform, pf, await pf.getPage(platform));
+
       if (page) {
         subPackages[pf.root].pages.push(page);
       }
@@ -323,6 +325,33 @@ export class Context {
       }
     }
     return items;
+  }
+
+  private getPageFileOption(pf: PageFile): PageFileOption {
+    return {
+      filePath: pf.file,
+      pagePath: pf.path,
+      root: pf.root || undefined,
+    };
+  }
+
+  private async transformPage(platform: UniPlatform, pf: PageFile, page: PagesJSON.Page | null): Promise<PagesJSON.Page | null> {
+    if (!page) {
+      return null;
+    }
+
+    const opt = this.getPageFileOption(pf);
+
+    for (const hook of this.cfg.hooks) {
+      if (hook.transformPage) {
+        page = await hook.transformPage(platform, page, opt);
+        if (!page) {
+          return null;
+        }
+      }
+    }
+
+    return page;
   }
 
   private async needUpdate(filepath?: string): Promise<boolean> {
