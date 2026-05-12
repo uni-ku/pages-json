@@ -1,7 +1,7 @@
 {
   "name": "@uni-ku/pages-json",
   "type": "module",
-  "version": "0.2.48",
+  "version": "0.2.49",
   "description": "Define uniapp pages.json dynamically.",
   "author": "Edwin Xu <edwinhuish@gmail.com>",
   "license": "MIT",
