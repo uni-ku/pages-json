@@ -1,6 +1,7 @@
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import process from 'node:process';
+import { pathToFileURL } from 'node:url';
 import vm from 'node:vm';
 import * as ts from 'typescript';
 
@@ -60,7 +61,7 @@ export async function parseCode({ code, filename, env = {}, timeout = 1000 }: Pa
       __filename: filename,
       __dirname: dir,
       require: createRequire(filename),
-      import: (id: string) => import(id),
+      import: (id: string) => import(pathToFileURL(id).href),
       process: {
         ...process,
         env: {
