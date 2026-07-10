@@ -1,9 +1,8 @@
 packages:
   - .
   - playground
-
-onlyBuiltDependencies:
-  - esbuild
-  - simple-git-hooks
-  - unrs-resolver
-  - core-js
+allowBuilds:
+  core-js: true
+  esbuild: true
+  simple-git-hooks: true
+  unrs-resolver: true

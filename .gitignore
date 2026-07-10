@@ -9,3 +9,4 @@ lib-cov
 node_modules
 temp
 .tsup
+.husky
